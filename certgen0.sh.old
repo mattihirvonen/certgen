@@ -1,0 +1,107 @@
+#!/bin/bash
+#
+# Server require:
+# - "root_CA1.pem"
+# - "server_CA1_1.key"
+# - "server_CA1_1.pem"
+# - "client_CA1_?.pem"  # for each unigue client or client group
+#
+# Client require:
+# - "root_CA1"
+# - "client_CA1_?.key"  # for each unique client or client group
+# - "client_CA1_?.pem"  # for each unigue client or client group
+
+
+COMMAND=$1
+NUMBER=$2
+
+ROOT=root_CA1
+SERVER=server_CA1_$NUMBER
+CLIENT=client_CA1_$NUMBER
+
+DOMAIN=domain
+
+
+# Create private key:
+# - $1  key output file name
+create_key() {
+#   openssl genrsa -des3 -out $1.key 2048      # encrypted with password
+    openssl genrsa       -out $1.key 2048      # nonencrypted
+}
+
+
+# Create certificate:
+# - $1  key-in / pem-out file base name
+# - $2  certificate validity in days
+create_cert() {
+    create_key  $1
+#   openssl req -x509 -sha256 -days 1825 -newkey rsa:4096 -keyout $ROOT.key -out $ROOT.pem
+    openssl req -x509 -sha256 -days $2                    -key    $1.key    -out $1.pem
+}
+
+
+# Create a Certificate Sign Request (CSR)
+# - $1  root certificate's key base name
+create_csr() {
+#   openssl req -key $ROOT.key -new -out $ROOT.csr
+    openssl req -key $1.key    -new -out $DOMAIN.csr
+}
+
+
+sign_cert() {
+# - $1  in-key  root certificate's key base name
+# - $2  pem-out result certificate's base name
+#   openssl x509 -req -CA $ROOT.pem -CAkey $ROOT.key -in domain.csr  -out domain.pem -days 365 -CAcreateserial -extfile  domain.ext
+    openssl x509 -req -CA $1.pem    -CAkey $1.key    -in $DOMAIN.csr -out $2.pem     -days 365 -CAcreateserial -extfile $DOMAIN.ext
+    rm      $1.srl
+}
+
+
+# Create root certificate:
+create_root() {
+    create_cert  $ROOT  1825
+}
+
+
+# Create self signed server certificate
+create_server() {
+    create_cert  $1 365
+    sign_cert    $ROOT  $SERVER
+}
+
+
+# Create self signed client certificate
+create_client() {
+    create_cert  $1 365
+    sign_cert    $ROOT  $CLIENT
+}
+
+
+
+case $COMMAND in
+
+    key)
+	create_key   $NUMBER
+	;;
+
+    root)
+	create_root  $ROOT
+	create_csr   $ROOT $DOMAIN
+	;;
+
+    server)
+	create_server  $SERVER
+	;;
+
+    client)
+	create_client  $CLIENT
+	;;
+
+    clean)
+	rm -f *.key *.pem *.csr *.srl *.crt *.conf
+	;;
+
+    *)
+	echo "Unknown command: "$COMMAND
+	;;
+esac
