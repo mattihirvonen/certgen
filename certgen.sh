@@ -9,9 +9,11 @@
 # - "root_CA1.pem"
 # - "server_CA1_1.key"
 # - "server_CA1_1.pem"
+# - "client_CA1_1.pem"
+# - "client_CA1_2.pem"
 # - "client_CA1_?.pem"  # for each unigue client or client group
 #
-# Client require:
+# Client(s) require:
 # - "root_CA1"
 # - "client_CA1_?.key"  # for each unique client or client group
 # - "client_CA1_?.pem"  # for each unigue client or client group
@@ -132,8 +134,31 @@ create_ssl() {
 }
 
 #-----------------------------------------------------------------------------
+# Print help
+
+print_help() {
+    echo ''
+    echo 'Usage:  certgen.sh  [root] | [cert domain] | [text certfile]'
+    echo ''
+    echo 'Where'
+    echo ''
+    echo '  root       generate root CA certificate for self signed certificates'
+    echo '  cert       generate self signed certificate -- generated with "root"'
+    echo '  text       print out X509 certificate'
+    echo '  domain     is domain name or IP address'
+    echo '  certfile   is full X509 certificate file name'
+    echo ''
+
+    exit 0
+}
+
+#-----------------------------------------------------------------------------
 
 case $COMMAND in
+
+    -?)      print_help ;;
+    -h)      print_help ;;
+    --help)  print_help ;;
 
     root)
         generate_key  ${ROOTCA}
