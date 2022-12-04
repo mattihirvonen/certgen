@@ -123,6 +123,7 @@ subjectAltName = @alt_names
 [alt_names]
 DNS.1 = ${DOMAIN}
 DNS.2 = *.${DOMAIN}
+DNS.3 = localhost
 IP.1 = 127.0.0.1
 
 EOF
