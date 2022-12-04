@@ -2,7 +2,7 @@
 Self Signed Certificate Generator
 ---------------------------------
 
-Usage:  certgen.sh  **[--clean] | [--text certfile] | [rootCAname certName]**
+Usage:  certgen.sh  **[--clean] | [--text certfile] | [rootCAname certName [days]]**
 
 Where
 
@@ -16,6 +16,9 @@ Where
   * File get Common Name (CN) field value same as "**certName**".
   * File get DNS field values "**certName**" and "**\*.certName**" and "**localhost**".
   * File get IP field value "**127.0.0.1**"
+  
+***days***
+  * Certificate's validity in days (default 397 which is max for HTTPS/browser usage)
 
 ***--text***
   * Print out X509 certificate. "**certfile**" is full X509
