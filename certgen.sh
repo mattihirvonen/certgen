@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 #
 # https://devopscube.com/create-self-signed-certificates-openssl/
 # https://www.baeldung.com/openssl-self-signed-cert
@@ -17,6 +17,14 @@
 # - "root_CA1"
 # - "client_CA1_?.key"  # for each unique client or client group
 # - "client_CA1_?.pem"  # for each unigue client or client group
+#
+# NOTE Mosquitto (MQTT) configuration:
+# - require_certificates – Main setting tells client it needs to supply
+#   a certificate when set to true. Default is false
+# - use_identity_as_username – When set to true it tells mosquitto
+#   not to use the password file but to take the username from the
+#   certificate (common name given to certificate when you create it).
+#   Default is false
 
 
 #if [ "$#" -ne 1 ]
