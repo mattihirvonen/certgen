@@ -150,7 +150,7 @@ print_help() {
     echo 'Where'
     echo ''
     echo '  rootCAname   Root CA certificate file base name without ectension. If file'
-    dcho '               exist, then use existing file and do not generate new file.'
+    echo '               exist, then use existing file and do not generate new file.'
     echo '  certName     Self signed certificate file base name. Use "rootCAname"'
     echo '               to sign new certificate file. File get CN (Common Name)'
     echo '               field value same as "certName"'
