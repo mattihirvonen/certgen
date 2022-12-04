@@ -5,8 +5,8 @@
 #
 # MbedTLS / MZ's TLS example appliction requirements:
 #
-# Set root certificate's lifetime to 3683 days (10 years)
-# SSL/TLS certificate maximum validity is 398 days (13 months)
+# Set root certificate's lifetime to 7300 days (20 years)
+# SSL/TLS certificate maximum validity is 398 days (13 months) for HTTPS/browser usage
 
 # Server require:
 # - "root_CA1.pem"
@@ -49,6 +49,12 @@ ORGANIZATION='HomeLab'
 ORGANIZATIONUNIT='HomeLab R&D'
 
 BITS=4096
+DAYS=397    # 397 / 7300
+
+if [ "$#" -eq 3 ]
+then
+    DAYS=$3
+fi
 
 #-----------------------------------------------------------------------------
 # Generate Private key
@@ -63,7 +69,7 @@ generate_key() {
 
 create_root() {
     openssl req -x509 \
-                -sha256 -days 3683 \
+                -sha256 -days 7300 \
                 -nodes \
                 -key ${ROOTCA}.key \
                 -subj "/CN=${DOMAIN}/C=${COUNTRY}/L=${LOCATION}" \
@@ -140,7 +146,7 @@ create_ssl() {
         -in ${DOMAIN}.csr \
         -CA ${ROOTCA}.pem -CAkey ${ROOTCA}.key \
         -CAcreateserial -out ${DOMAIN}.crt \
-        -days 397 \
+        -days ${DAYS} \
         -sha256 -extfile cert.conf
 
     mv ${DOMAIN}.crt ${DOMAIN}.pem
@@ -151,7 +157,7 @@ create_ssl() {
 
 print_help() {
     echo ''
-    echo 'Usage:  certgen.sh  [--clean] | [--text certfile] | [rootCAname certName]'
+    echo 'Usage:  certgen.sh  [--clean] | [--text certfile] | [rootCAname certName [days]]'
     echo ''
     echo 'Where'
     echo ''
@@ -160,7 +166,9 @@ print_help() {
     echo '  certName     Self signed certificate file base name.'
     echo '               Uses "rootCAname" to sign new certificate file.'
     echo '               File get Common Name (CN) field value same as "certName".'
-    echo '               File get DNS field values "certName" and "*.certName".'
+    echo '               File get DNS field values "certName" and "*.certName" and "localhost".'
+    echo '               File get IP  field value  "127.0.0.1".'
+    echo '  days         Certificate validity in days (default 397).'
     echo '  --text       Print out X509 certificate. "certfile" is full X509'
     echo '               certificate file name with extension.'
     echo '  --clean      Remove all existing certificate information files.'
