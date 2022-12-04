@@ -5,6 +5,9 @@
 #
 # MbedTLS / MZ's TLS example appliction requirements:
 #
+# Set root certificate's lifetime to 3683 days (10 years)
+# SSL/TLS certificate maximum validity is 398 days (13 months)
+
 # Server require:
 # - "root_CA1.pem"
 # - "server_CA1_1.key"
@@ -60,7 +63,7 @@ generate_key() {
 
 create_root() {
     openssl req -x509 \
-                -sha256 -days 356 \
+                -sha256 -days 3683 \
                 -nodes \
                 -key ${ROOTCA}.key \
                 -subj "/CN=${DOMAIN}/C=${COUNTRY}/L=${LOCATION}" \
@@ -137,7 +140,7 @@ create_ssl() {
         -in ${DOMAIN}.csr \
         -CA ${ROOTCA}.pem -CAkey ${ROOTCA}.key \
         -CAcreateserial -out ${DOMAIN}.crt \
-        -days 365 \
+        -days 397 \
         -sha256 -extfile cert.conf
 
     mv ${DOMAIN}.crt ${DOMAIN}.pem
