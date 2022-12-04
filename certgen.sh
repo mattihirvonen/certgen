@@ -122,6 +122,7 @@ subjectAltName = @alt_names
 
 [alt_names]
 DNS.1 = ${DOMAIN}
+DNS.2 = *.${DOMAIN}
 
 EOF
 }
@@ -149,14 +150,15 @@ print_help() {
     echo ''
     echo 'Where'
     echo ''
-    echo '  rootCAname   Root CA certificate file base name without ectension. If file'
+    echo '  rootCAname   Root CA certificate file base name without extension. If file'
     echo '               exist, then use existing file and do not generate new file.'
-    echo '  certName     Self signed certificate file base name. Use "rootCAname"'
-    echo '               to sign new certificate file. File get CN (Common Name)'
-    echo '               field value same as "certName"'
+    echo '  certName     Self signed certificate file base name.'
+    echo '               Uses "rootCAname" to sign new certificate file.'
+    echo '               File get Common Name (CN) field value same as "certName".'
+    echo '               File get DNS field values "certName" and "*.certName".'
     echo '  --text       Print out X509 certificate. "certfile" is full X509'
-    echo '               certificate file name with extension'
-    echo '  --clean      Remove all existing certificate information files'
+    echo '               certificate file name with extension.'
+    echo '  --clean      Remove all existing certificate information files.'
     echo ''
 }
 
@@ -188,3 +190,4 @@ create_csr
 create_conf4cert
 create_ssl
 rm -f *.conf *.csr *.srl
+
