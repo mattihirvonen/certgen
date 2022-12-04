@@ -36,9 +36,8 @@
 
 
 COMMAND=$1
+ROOTCA=$1
 DOMAIN=$2
-
-ROOTCA=root_CA1
 
 COUNTRY='FI'
 STATE='Uusimaa'
@@ -146,48 +145,46 @@ create_ssl() {
 
 print_help() {
     echo ''
-    echo 'Usage:  certgen.sh  [root] | [cert domain] | [text certfile]'
+    echo 'Usage:  certgen.sh  [--clean] | [--text certfile] | [rootCAname certName]'
     echo ''
     echo 'Where'
     echo ''
-    echo '  root       generate root CA certificate for self signed certificates'
-    echo '  cert       generate self signed certificate -- generated with "root"'
-    echo '  text       print out X509 certificate'
-    echo '  domain     is domain name or IP address'
-    echo '  certfile   is full X509 certificate file name'
+    echo '  rootCAname   Root CA certificate file base name without ectension. If file'
+    dcho '               exist, then use existing file and do not generate new file.'
+    echo '  certName     Self signed certificate file base name. Use "rootCAname"'
+    echo '               to sign new certificate file. File get CN (Common Name)'
+    echo '               field value same as "certName"'
+    echo '  --text       Print out X509 certificate. "certfile" is full X509'
+    echo '               certificate file name with extension'
+    echo '  --clean      Remove all existing certificate information files'
     echo ''
-
-    exit 0
 }
 
 #-----------------------------------------------------------------------------
 
 case $COMMAND in
 
-    -?)      print_help ;;
-    -h)      print_help ;;
-    --help)  print_help ;;
+    -?)      print_help;  exit 0 ;;
+    -h)      print_help;  exit 0 ;;
+    --help)  print_help;  exit 0 ;;
 
-    root)
-        generate_key  ${ROOTCA}
-	create_root
-	;;
+    --text)  openssl x509 -text -noout -in $2;  exit 0 ;;
 
-    cert)
-	generate_key  ${DOMAIN}
-	create_csr_conf
-	create_csr
-	create_conf4cert
-	create_ssl
-	rm -f *.conf *.csr *.srl
-	;;
-
-    text)
-	openssl x509 -text -noout -in $2
-	;;
-
-    clean)
-	rm -f *.crt *.pem *.csr *.conf *.key *.srl
-	;;
+    --clean) rm -f *.crt *.pem *.csr *.conf *.key *.srl;  exit 0 ;;
 
 esac
+
+
+if ! [ -f "${ROOTCA}.key" ]
+then
+	generate_key  ${ROOTCA}
+	create_root
+fi
+
+
+generate_key  ${DOMAIN}
+create_csr_conf
+create_csr
+create_conf4cert
+create_ssl
+rm -f *.conf *.csr *.srl
